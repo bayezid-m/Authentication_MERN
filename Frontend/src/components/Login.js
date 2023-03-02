@@ -1,52 +1,60 @@
-import React, { Component } from 'react'
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 
-const Login = () => {
-  
-    return (
-      <form>
-        <h3>Sign In</h3>
+function Login() {
+	const [email, setEmail] = useState('')
+	const [password, setPassword] = useState('')
+	const navigate = useNavigate();
+	
+	async function loginUser(event) {
+		event.preventDefault()
 
-        <div className="mb-3">
-          <label>Email address</label>
-          <input
-            type="email"
-            className="form-control"
-            placeholder="Enter email"
-          />
-        </div>
+		const response = await fetch('http://localhost:2000/api/login', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				email,
+				password,
+			}),
+		})
 
-        <div className="mb-3">
-          <label>Password</label>
-          <input
-            type="password"
-            className="form-control"
-            placeholder="Enter password"
-          />
-        </div>
+		const data = await response.json()
 
-        <div className="mb-3">
-          <div className="custom-control custom-checkbox">
-            <input
-              type="checkbox"
-              className="custom-control-input"
-              id="customCheck1"
-            />
-            <label className="custom-control-label" htmlFor="customCheck1">
-              Remember me
-            </label>
-          </div>
-        </div>
+		if (data.user) {
+			localStorage.setItem('token', data.user)
+			
+			navigate('/dashboard');
+		} else {
+			alert('Please check your username and password')
+		}
+	}
 
-        <div className="d-grid">
-          <button type="submit" className="btn btn-primary">
-            Submit
-          </button>
-        </div>
-        <p className="forgot-password text-right">
-          Forgot <a href="#">password?</a>
-        </p>
-      </form>
-    )
-  
-};
-export default Login;
+	return (
+		<div>
+			<h1>Login</h1>
+			<form onSubmit={loginUser}>
+				<input
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+					type="email"
+					placeholder="Email"
+				/>
+				<br />
+				<input
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+					type="password"
+					placeholder="Password"
+				/>
+				<br />
+				<input type="submit" value="Login" />
+				<button><Link to='/'>register</Link></button>
+				
+			</form>
+		</div>
+	)
+}
+
+export default Login
