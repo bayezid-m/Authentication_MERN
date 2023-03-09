@@ -5,10 +5,12 @@ const mongoose = require('mongoose')
 const User = require('./model/user')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const Todo = require('./model/todo')
 
 app.use(cors())
 app.use(express.json())
-mongoose.connect('mongodb://localhost:27017/test')
+mongoose.connect('mongodb://localhost:27017')
+
 app.post('/api/register', async (req, res) => {
 	console.log(req.body)
 	try {
@@ -40,7 +42,8 @@ app.post('/api/login', async (req, res) => {
 
 	if (isPasswordValid) {
 		const token = jwt.sign(
-			{
+			{  
+				id : user._id,
 				name: user.name,
 				email: user.email,
 			},
@@ -52,6 +55,67 @@ app.post('/api/login', async (req, res) => {
 		return res.json({ status: 'error', user: false })
 	}
 })
+
+app.post('/api/todos', async (req, res) => {
+	console.log(req.body)
+	const token = req.headers['x-access-token']
+	try {
+		const decoded = jwt.verify(token, 'secret123')
+		//const id = decoded.id
+		await Todo.create({
+			text: req.body.text,
+			done: req.body.done,
+			email: decoded.email,
+		})
+		res.json({ status: 'ok' })
+	} catch (err) {
+		res.json({ status: 'error', error: 'Duplicate email' })
+	}
+})
+app.get('/api/todos', async (req, res) => {
+	const token = req.headers['x-access-token']
+	try {
+		const decoded = jwt.verify(token, 'secret123')
+		const email = decoded.email
+		const user = await Todo.find({ email: email })
+		return res.json({ status: 'ok', user: user })
+	} catch (error) {
+		console.log(error)
+		res.json({ status: 'error', error: 'invalid token hr' })
+	}
+})
+app.delete('/api/todos/(:id)', async (req, res) => {
+	//const token = req.headers['x-access-token']
+	const id = req.params.id;
+	try {
+		// const decoded = jwt.verify(token, 'secret123')
+		// const email = decoded.email
+		const user = await Todo.findByIdAndDelete(id);
+		await user.remove();
+		//return res.json({ status: 'ok', user: user })
+		console.log(id);
+		res.json({ status: 'ok' })
+	} catch (error) {
+		console.log(error)
+		res.json({ status: 'error', error: 'invalid token hr' })
+	}
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // app.post('/logout', (req, res) =>{
 	

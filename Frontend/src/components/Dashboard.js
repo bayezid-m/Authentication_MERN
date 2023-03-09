@@ -1,27 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState} from 'react'
 import { useNavigate } from 'react-router-dom'
-//import jwt_decode from "jwt-decode";
-//import jwt from 'jsonwebtoken'
-//import { useHistory } from 'react-router-dom'
-//const jwt = require('jsonwebtoken')
 
 const Dashboard = () => {
     const navigate = useNavigate();
-	const [quote, setQuote] = useState('')
-	const [tempQuote, setTempQuote] = useState('')
-    const [name, setName] = useState('')
+	
+	const [text, setText] = useState('')
+	const [done, setDone] = useState('')
+	const [todos, setTodos] = useState([])
+	
     
 	async function Quote() {
-		const req = await fetch('http://localhost:2000/api/quote', {
-           // method: 'GET',
+		const req = await fetch('http://localhost:2000/api/todos', {
+            method: 'GET',
 			headers: {
 				'x-access-token': localStorage.getItem('token'),
 			},
 		})
 		const data = await req.json()
 		if (data.status === 'ok') {
-			setQuote(data.quote)
-            setName(data.name)
+			setTodos(data.user)
+			console.log(data.user);
 		} else {
 			alert(data.error)
 		}
@@ -30,25 +28,12 @@ const Dashboard = () => {
 	useEffect(() => {
         //Quote();
 		const token = localStorage.getItem('token')
-		// if (token) {
-		// 	const user = jwt.decode(token)
-		// 	if (!user) {
-		// 		localStorage.removeItem('token')
-		// 		//history.replace('/login')
-		// 	} else {
-		// 		Quote()
-		// 	}
-		// }
         if (!token) {
-			//const user = jwt.decode(token)
-			
 				localStorage.removeItem('token')
 				navigate('/login');
 			} else {
 				Quote();
-			}
-		
-        
+			}  
 	}, [])
 
     function logout(){
@@ -56,43 +41,70 @@ const Dashboard = () => {
         navigate('/login');
     }
 
-	async function updateQuote(event) {
-		event.preventDefault()
 
-		const req = await fetch('http://localhost:2000/api/quote', {
-			method: 'POST',
-			headers: {
+	async function addTodo (event) {
+		event.preventDefault();
+		const response = await fetch('http://localhost:2000/api/todos', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+			'x-access-token': localStorage.getItem('token'),
+		  },
+		  body: JSON.stringify({
+			text,
+			done,
+		}),
+		})
+		const data = await response.json();
+		if (data.status === 'ok') {
+			console.log("everything okay");
+			navigate('/dashboard');
+			setText('')
+			setDone('')
+			Quote();
+		} 
+	  }
+	  //console.log(todos.text);
+	  async function deleteTodo(id) {
+		try {
+			const res = await fetch(`http://localhost:2000/api/todos/${id}`, {
+			  method: 'DELETE',
+			  headers: {
 				'Content-Type': 'application/json',
 				'x-access-token': localStorage.getItem('token'),
-			},
-			body: JSON.stringify({
-				quote: tempQuote,
-			}),
-		})
-
-		const data = await req.json()
-		if (data.status === 'ok') {
-			setQuote(tempQuote)
-			setTempQuote('')
-		} else {
-			alert(data.error)
-		}
-	}
-
+			  },
+			});
+			const data = await res.json();
+			if (data.status === 'ok') {
+			  console.log('Todo deleted successfully');
+			  Quote();
+			}
+		  } catch (err) {
+			console.error(err);
+		  }
+	  };
+	  
 	return (
 		<div>
-			<h1>{name || 'No name'}: {quote || 'No quote found'}</h1>
-			<form onSubmit={updateQuote}>
-				<input
+			<form onSubmit={addTodo}>
+			<input placeholder={'What do you want to do?'}
+					value={text}
 					type="text"
-					placeholder="Quote"
-					value={tempQuote}
-					onChange={(e) => setTempQuote(e.target.value)}
-				/>
-				<input type="submit" value="Update quote" />
-                <br/>
-                <input type="submit" value="Logout" onClick={logout}/>
-			</form>
+					onChange={(e) => setText(e.target.value)}/>
+			<input placeholder={'is it complete?'}
+					value={done}
+					type="text"
+					onChange={(e) => setDone(e.target.value)}/>
+					<input type="submit" value="add" />
+    		</form>
+    		<ul>{todos.map(todo =>(
+				<li>{todo.text}, 
+				{todo.done},
+				<input type="submit" value="Delete" onClick={()=> deleteTodo(todo._id)}/>		
+				</li>
+			))}
+   			 </ul>
+				<input type="submit" value="Logout" onClick={logout}/>
 		</div>
 	)
 }

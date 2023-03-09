@@ -7,6 +7,7 @@ function Register() {
 	const [name, setName] = useState('')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
+	
 
 	async function registerUser(event) {
 		event.preventDefault()
@@ -20,9 +21,9 @@ function Register() {
 				name,
 				email,
 				password,
+				
 			}),
 		})
-
 		const data = await response.json()
 
 		if (data.status === 'ok') {
