@@ -9,8 +9,8 @@ const Todo = require('./model/todo')
 
 app.use(cors())
 app.use(express.json())
-mongoose.connect('mongodb://localhost:27017')
-
+//mongoose.connect('mongodb://localhost:27017')
+mongoose.connect('mongodb+srv://root:root@ojana.kysbbli.mongodb.net/?retryWrites=true&w=majority')
 app.post('/api/register', async (req, res) => {
 	console.log(req.body)
 	try {
@@ -78,7 +78,7 @@ app.get('/api/todos', async (req, res) => {
 		const decoded = jwt.verify(token, 'secret123')
 		const email = decoded.email
 		const user = await Todo.find({ email: email })
-		return res.json({ status: 'ok', user: user })
+		return res.json({ status: 'ok', user: user, email: email })
 	} catch (error) {
 		console.log(error)
 		res.json({ status: 'error', error: 'invalid token hr' })
@@ -100,6 +100,35 @@ app.delete('/api/todos/(:id)', async (req, res) => {
 		res.json({ status: 'error', error: 'invalid token hr' })
 	}
 })
+app.get('/api/todos/(:id)', async (req, res) => {
+	const id = req.params.id;
+	try {
+		const user = await Todo.findById(id);
+		return res.json({ status: 'ok', user: user })
+		//console.log(user: user);
+	} catch (error) {
+		console.log(error)
+		res.json({ status: 'error', error: 'invalid token hr' })
+	}
+})
+app.post('/api/todos/(:id)', async (req, res) => {
+	const id = req.params.id;
+	console.log(req.body.text);
+	try {
+		await Todo.updateOne({_id: id}, {
+			text: req.body.text,
+			done: req.body.done
+		}).then(()=>{
+			return res.json({ status: 'ok'})
+		})
+		
+		//console.log(user: user);
+	} catch (error) {
+		console.log(error)
+		res.json({ status: 'error', error: 'invalid token hr' })
+	}
+})
+
 
 
 

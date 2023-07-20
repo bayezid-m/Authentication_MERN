@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -7,7 +7,7 @@ const Dashboard = () => {
 	const [text, setText] = useState('')
 	const [done, setDone] = useState('')
 	const [todos, setTodos] = useState([])
-	
+	const [email, setEmail] = useState('')
     
 	async function Quote() {
 		const req = await fetch('http://localhost:2000/api/todos', {
@@ -20,6 +20,8 @@ const Dashboard = () => {
 		if (data.status === 'ok') {
 			setTodos(data.user)
 			console.log(data.user);
+			setEmail(data.email)
+			console.log(data.email);
 		} else {
 			alert(data.error)
 		}
@@ -83,9 +85,13 @@ const Dashboard = () => {
 			console.error(err);
 		  }
 	  };
+	  function showTodo(id){
+		navigate("/update", {state:id})
+	  }
 	  
 	return (
 		<div>
+		<h2>Todo content of: {email}</h2>
 			<form onSubmit={addTodo}>
 			<input placeholder={'What do you want to do?'}
 					value={text}
@@ -99,8 +105,9 @@ const Dashboard = () => {
     		</form>
     		<ul>{todos.map(todo =>(
 				<li>{todo.text}, 
-				{todo.done},
-				<input type="submit" value="Delete" onClick={()=> deleteTodo(todo._id)}/>		
+				{todo.done}, 
+				<input type="submit" value="Delete" onClick={()=> deleteTodo(todo._id)}/>
+					<button onClick={()=>showTodo(todo._id)}>Update</button>	
 				</li>
 			))}
    			 </ul>
