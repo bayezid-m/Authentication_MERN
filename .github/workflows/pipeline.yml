@@ -24,17 +24,17 @@ jobs:
         context: ./Backend 
         file: ./Backend/dockerfile
         run: docker push ctbama/backend-app:latest
-    - name: Build Docker frontend images
+    - name: Build Docker Frontend images
       uses: docker/build-push-action@v5.0.0
       with:
-        context: cd ../frontend 
-        file: cd ../frontend/dockerfile
+        context: ./Frontend 
+        file: ./Frontend/dockerfile
         run: docker build -t ctbama/frontend-app  .
     - name: Publish Image to docker hub
       uses: docker/build-push-action@v5.0.0
       with:
-        context: ./frontend 
-        file: ./frontend/dockerfile
+        context: ./Frontend 
+        file: ./Frontend/dockerfile
         run: docker push ctbama/frontend-app:latest
 
   deploy:
