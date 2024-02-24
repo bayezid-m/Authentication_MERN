@@ -6,11 +6,28 @@ const User = require('./model/user')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const Todo = require('./model/todo')
+require('dotenv').config()
 
 app.use(cors())
 app.use(express.json())
-//mongoose.connect('mongodb://localhost:27017')
-mongoose.connect('mongodb+srv://root:root@ojana.kysbbli.mongodb.net/?retryWrites=true&w=majority')
+app.use(express.urlencoded({ extended: true }));
+
+
+const connectDB = async () => {
+	const mongoURL = process.env.DB_URL;
+	try {
+	  await mongoose.connect(mongoURL);
+	  console.log('DB is connected');
+	} catch (error) {
+	  console.log(error);
+	}
+  };
+
+app.get('/', async(req, res)=>{
+	return res.json({
+		"message": "Hi, I am from backend"
+	})
+})
 app.post('/api/register', async (req, res) => {
 	console.log(req.body)
 	try {
@@ -187,4 +204,5 @@ app.post('/api/quote', async (req, res) => {
 
 app.listen(2000, ()=>{
     console.log('Server is running on port 2000.');
+	connectDB()
 })
