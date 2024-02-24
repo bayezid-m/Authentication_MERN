@@ -18,7 +18,7 @@ export default function Update() {
 	async function Quote() {
         //const id = useParams();
         //console.log(id);
-		const req = await fetch(`http://localhost:2000/api/todos/${id}`, {
+		const req = await fetch(`http://13.48.148.49:2000/api/todos/${id}`, {
             method: 'GET',
 			headers: {
 				'x-access-token': localStorage.getItem('token'),
@@ -59,7 +59,7 @@ export default function Update() {
         console.log(text);
         console.log(done);
         event.preventDefault();
-		const response = await fetch(`http://localhost:2000/api/todos/${id}`, {
+		const response = await fetch(`http://13.48.148.49:2000/api/todos/${id}`, {
 		  method: 'POST',
 		  headers: {
 			'Content-Type': 'application/json',

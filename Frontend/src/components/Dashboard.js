@@ -10,7 +10,7 @@ const Dashboard = () => {
 	const [email, setEmail] = useState('')
     
 	async function Quote() {
-		const req = await fetch('http://localhost:2000/api/todos', {
+		const req = await fetch('http://13.48.148.49:2000/api/todos', {
             method: 'GET',
 			headers: {
 				'x-access-token': localStorage.getItem('token'),
@@ -46,7 +46,7 @@ const Dashboard = () => {
 
 	async function addTodo (event) {
 		event.preventDefault();
-		const response = await fetch('http://localhost:2000/api/todos', {
+		const response = await fetch('http://13.48.148.49:2000/api/todos', {
 		  method: 'POST',
 		  headers: {
 			'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ const Dashboard = () => {
 	  //console.log(todos.text);
 	  async function deleteTodo(id) {
 		try {
-			const res = await fetch(`http://localhost:2000/api/todos/${id}`, {
+			const res = await fetch(`http://13.48.148.49:2000/api/todos/${id}`, {
 			  method: 'DELETE',
 			  headers: {
 				'Content-Type': 'application/json',

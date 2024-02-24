@@ -24,14 +24,32 @@ jobs:
         context: ./Backend 
         file: ./Backend/dockerfile
         run: docker push ctbama/backend-app:latest
+    - name: Build Docker Backend images
+      uses: docker/build-push-action@v5.0.0
+      with:
+        context: ./frontend 
+        file: ./frontend/dockerfile
+        run: docker build -t ctbama/frontend-app  .
+    - name: Publish Image to docker hub
+      uses: docker/build-push-action@v5.0.0
+      with:
+        context: ./frontend 
+        file: ./frontend/dockerfile
+        run: docker push ctbama/frontend-app:latest
 
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
-      - name: Pull image from docker hub
+      - name: Pull backend image from docker hub
         run: docker pull ctbama/backend-app:latest
-      - name: Delete old container
+      - name: Delete old backend container
         run: docker rm -f backend-app-container  
-      - name: Run Docker Container
+      - name: Run Docker backend Container
         run: docker run -d -p 2000:2000 --name backend-app-container -e DB_URL='${{ secrets.DB_URL }}' ctbama/backend-app
+      - name: Pull frontend image from docker hub
+        run: docker pull ctbama/frontend-app:latest
+      - name: Delete old frontend container
+        run: docker rm -f frontend-app-container  
+      - name: Run Docker frontend Container
+        run: docker run -d -p 3000:80 --name frontend-app-container ctbama/frontend-app

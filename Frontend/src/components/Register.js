@@ -12,7 +12,7 @@ function Register() {
 	async function registerUser(event) {
 		event.preventDefault()
 
-		const response = await fetch('http://localhost:2000/api/register', {
+		const response = await fetch('http://13.48.148.49:2000/api/register', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
