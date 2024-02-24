@@ -19,14 +19,14 @@ jobs:
         file: ./Backend/dockerfileBackend  
         run: docker build -t ctbama/backend-app  .
     - name: Publish Image to docker hub
-      run: docker push ctbama/backend-app:latest 
+      run: docker push ctbama/backend-app:latest
 
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
       - name: Pull image from docker hub
-        run: docker pull ctbama/backend-app:latest 
+        run: docker pull ctbama/backend-app:latest
       - name: Delete old container
         run: docker rm -f backend-app-container  
       - name: Run Docker Container
