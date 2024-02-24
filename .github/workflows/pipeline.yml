@@ -27,7 +27,6 @@ jobs:
     - name: Build Docker frontend images
       uses: docker/build-push-action@v5.0.0
       with:
-        context: ./frontend 
         file: ./frontend/dockerfile
         run: docker build -t ctbama/frontend-app  .
     - name: Publish Image to docker hub
